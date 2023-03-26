@@ -17,16 +17,6 @@
 #define GAME_NUM        6
 
 
-&bm: balanced_mods {
-        compatible = "zmk,behavior-hold-tap";
-        label = "OUTER_MODS";
-        #binding-cells = <2>;
-        tapping-term-ms = <200>;    // <---[[moderate duration]]
-        quick-tap-ms = <0>;
-        flavor = "balanced";
-        bindings = <&kp>, <&kp>;
-};
-
 
 
 &mt {
@@ -53,6 +43,18 @@
 
         keymap {
                 compatible = "zmk,keymap";
+
+                behaviors {
+                        bm: balanced_mods {
+                                compatible = "zmk,behavior-hold-tap";
+                                label = "OUTER_MODS";
+                                #binding-cells = <2>;
+                                tapping-term-ms = <200>;    // <---[[moderate duration]]
+                                quick-tap-ms = <0>;
+                                flavor = "balanced";
+                                bindings = <&kp>, <&kp>;
+                        };
+                };
 
                 default_layer {
                         label = " DEFAULT";
