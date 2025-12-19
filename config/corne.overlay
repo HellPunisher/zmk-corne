@@ -1,1 +1,16 @@
+/* config/corne.overlay */
 
+&spi1 {
+    compatible = "nordic,nrf-spim";
+    status = "okay";
+    cs-gpios = <&gpio0 17 GPIO_ACTIVE_HIGH>; /* Проверь пин CS, для nrfmicro это часто P0.17 или P1.06 */
+    
+    nice_view_spi: nice_view_spi {
+        compatible = "zephyr,spi-bitbang";
+        #address-cells = <1>;
+        #size-cells = <0>;
+        reg = <0>;
+        spi-max-frequency = <8000000>;
+        status = "okay";
+    };
+};
