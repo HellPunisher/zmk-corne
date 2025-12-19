@@ -1,16 +1,55 @@
 /* config/corne.overlay */
 
+&pinctrl {
+    /* Настраиваем пины SPI явно для nRFMicro / nRF52840 */
+    spi1_default: spi1_default {
+        group1 {
+            psels = <NRF_PSEL(SPIM_SCK, 1, 13)>,   /* P1.13 = SCK */
+                    <NRF_PSEL(SPIM_MOSI, 0, 10)>,  /* P0.10 = MOSI */
+                    <NRF_PSEL(SPIM_MISO, 1, 11)>;  /* P1.11 = MISO (не используется, но нужен шине) */
+        };
+    };
+    spi1_sleep: spi1_sleep {
+        group1 {
+            psels = <NRF_PSEL(SPIM_SCK, 1, 13)>,
+                    <NRF_PSEL(SPIM_MOSI, 0, 10)>,
+                    <NRF_PSEL(SPIM_MISO, 1, 11)>;
+            low-power-enable;
+        };
+    };
+};
+
 &spi1 {
     compatible = "nordic,nrf-spim";
     status = "okay";
-    cs-gpios = <&gpio0 17 GPIO_ACTIVE_HIGH>; /* Проверь пин CS, для nrfmicro это часто P0.17 или P1.06 */
+    pinctrl-0 = <&spi1_default>;
+    pinctrl-1 = <&spi1_sleep>;
+    pinctrl-names = "default", "sleep";
     
+    /* CS пин экрана. Для nRFMicro/NiceNano это обычно P0.06 (D1/TX) */
+    cs-gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
+
     nice_view_spi: nice_view_spi {
         compatible = "zephyr,spi-bitbang";
         #address-cells = <1>;
         #size-cells = <0>;
         reg = <0>;
         spi-max-frequency = <8000000>;
-        status = "okay";
+
+        /* Тут мы объявляем сам экран, раз мы убрали шилд */
+        nice_view: ls0xx@0 {
+            compatible = "sharp,ls0xx";
+            spi-max-frequency = <1000000>;
+            reg = <0>;
+            width = <160>;
+            height = <68>;
+        };
+    };
+};
+
+/* Говорим ZMK использовать этот дисплей */
+/ {
+    chosen {
+        zmk,display = &nice_view;
     };
 };
